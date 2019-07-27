@@ -56,7 +56,11 @@ https://vicroadsopendata-vicroadsmaps.opendata.arcgis.com/datasets/traffic-volum
 https://vicdata.vicroads.vic.gov.au/server/rest/services/Operations_Traffic/FeatureServer/0/query?where=1%3D1&outFields=*&geometry=144.951%2C-37.821%2C144.978%2C-37.815&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&outSR=4326&f=json
 
 ### PTV
+
+Crap Dont Use
 GTFS Release - https://github.com/google/transitfeed user this as it works in python 3 https://github.com/google/transitfeed/pull/484
+
+Good https://github.com/remix/partridge
 
 Feed - http://data.ptv.vic.gov.au/downloads/gtfs.zip
 https://discover.data.vic.gov.au/dataset/ptv-timetable-and-geographic-information-2015-gtfs
