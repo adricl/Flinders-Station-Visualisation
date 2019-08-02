@@ -3,6 +3,11 @@ import datetime
 import os
 import pandas as pd
 
+def convertTimeToStr(time):
+  split = time.split(':')
+  join = ''
+  return int(join.join(split))
+
 def loadData(dataType, inpath, dateSelected, stopIds):
   feed = ptg.load_raw_feed(inpath)
   trips = feed.trips
@@ -19,9 +24,7 @@ def loadData(dataType, inpath, dateSelected, stopIds):
   #we create a temp column to sort by
   sort_column = []
   for time in stop_times['arrival_time']:
-    split = time.split(':')
-    join = ''
-    sort_column.append(int(join.join(split)))
+    sort_column.append(convertTimeToStr(time))
   stop_times['sort_column'] = sort_column
 
   #default val of type
@@ -39,28 +42,23 @@ def loadData(dataType, inpath, dateSelected, stopIds):
   stop_times = stop_times.drop('trip_id', axis=1)
 
   filter_by_stops_sorted = filter_by_stops.sort_values(by='sort_column', axis=0, ascending=True)
+  filter_by_stops_sorted.to_csv(dataType + '.csv')
   return filter_by_stops_sorted
 
-def processMergedRecords(mergedData):
-  result = pd.concat(mergedData)
-  stop_times['arrival_departure'] = ''
-  result = result.sort_values(by='sort_column', axis=0, ascending=True)
+def generateResultData(result):
+  transformedData = pd.DataFrame(columns = ['time', 'type', 'arrival_departure', 'sort_column'])
 
+  for index, row in result.iterrows():
+    strCmp = convertTimeToStr(row.arrival_time) == convertTimeToStr(row.departure_time)
+    if(strCmp and int(row.stop_sequence == 1)):
+      transformedData = transformedData.append({'time': row.arrival_time, 'type': row.type, 'arrival_departure': 'departure', 'sort_column': row.sort_column }, ignore_index=True)
+    elif(strCmp):
+      transformedData = transformedData.append({'time': row.arrival_time, 'type': row.type, 'arrival_departure': 'arrival', 'sort_column': row.sort_column }, ignore_index=True)
+    else:
+      transformedData = transformedData.append({'time': row.arrival_time, 'type': row.type, 'arrival_departure': 'arrival', 'sort_column': convertTimeToStr(row.arrival_time) }, ignore_index=True)
+      transformedData = transformedData.append({'time': row.departure_time, 'type': row.type, 'arrival_departure': 'departure', 'sort_column': convertTimeToStr(row.departure_time) }, ignore_index=True)
+  return transformedData.sort_values(by='sort_column', axis=0, ascending=True)
   
-  #arrival or departure
-  
-#Create a column to work out arival or departure 
-#we assume if the stop_sequence is 1 we are departing and if its great than 1 we are just 
-#for i in df.index:
-#    if <something>:
-#        df.at[i, 'ifor'] = x
-#    else:
-#        df.at[i, 'ifor'] = y
-#  print(row[4])
-  #if int(row['stop_sequence']) > 1:
-  #  row['direction'] = 'arrival'
-  #else:
-  #  row['direction'] = 'depart'
 
 #train
 inpath = 'data/gtfs/2/google_transit.zip'
@@ -97,5 +95,8 @@ stopIds = ['41082']
 nightBus = loadData('night bus', inpath, dateSelected, stopIds)
 
 merge = [train, regTrain, tram, nightBus]
-result = processMergedRecords(merge)
+result = pd.concat(merge)
 result.to_csv('data.csv')
+
+transformedData = generateResultData(result)
+transformedData.to_csv('final.csv')
