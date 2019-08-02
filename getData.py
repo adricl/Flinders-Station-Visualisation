@@ -2,6 +2,20 @@ import partridge as ptg
 import datetime
 import os
 import pandas as pd
+import urllib.request as req
+import zipfile
+import json
+
+def getTransportData():
+  dataName = 'data'
+  fileName = 'gtfs.zip'
+  if not os.path.exists(dataName):
+    os.mkdir(dataName)
+  url = 'http://data.ptv.vic.gov.au/downloads/' + fileName
+  req.urlretrieve(url, dataName)
+  with zipfile.ZipFile(dataName + '/' + fileName, 'r') as zip_ref:
+    zip_ref.extractall()
+
 
 def convertTimeToStr(time):
   split = time.split(':')
@@ -58,7 +72,7 @@ def generateResultData(result):
       transformedData = transformedData.append({'time': row.arrival_time, 'type': row.type, 'arrival_departure': 'arrival', 'sort_column': convertTimeToStr(row.arrival_time) }, ignore_index=True)
       transformedData = transformedData.append({'time': row.departure_time, 'type': row.type, 'arrival_departure': 'departure', 'sort_column': convertTimeToStr(row.departure_time) }, ignore_index=True)
   return transformedData.sort_values(by='sort_column', axis=0, ascending=True)
-  
+#getTransportData()
 
 #train
 inpath = 'data/gtfs/2/google_transit.zip'
