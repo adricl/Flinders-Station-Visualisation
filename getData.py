@@ -19,8 +19,8 @@ def getTransportData():
 
 def convertTimeToStr(time):
   split = time.split(':')
-  join = ''
-  return int(join.join(split))
+  val = int(split[0]) * 60 + int(split[1])
+  return val
 
 def loadData(dataType, inpath, dateSelected, stopIds):
   feed = ptg.load_raw_feed(inpath)
