@@ -1,4 +1,4 @@
-from miditime.miditime import MIDITime
+from midiWrapper import MIDITime
 import pandas as pd
 import random
 
@@ -58,11 +58,11 @@ start_time = int(data.head(1).sort_column)
 note_list = []
 for index, row in data.iterrows():
     note = [int(row.sort_column) - start_time, int(mag_to_pitch_tuned(row.type, row.arrival_departure)), int(velocity(row.type)), int(duration(row.type))]
-    print(note)
     note_list.append(note)
 
 # Add a track with those notes
 mymidi.add_track(note_list)
+
 
 # Output the .mid file
 mymidi.save_midi()
