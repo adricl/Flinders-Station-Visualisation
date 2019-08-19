@@ -15,14 +15,28 @@ def mag_to_pitch_tuned(type, direction):
 
     # Pick a range of notes. This allows you to play in a key.
     #c_major = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-    c_major = ['C', 'C#', 'D', 'D#', 'E', 'E#', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'B#']
+    c_blues = ['C','Eb','F','G','Bb']
+    #c_major = ['C', 'C#', 'D', 'D#', 'E', 'E#', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'B#']
     #Find the note that matches your data point
-    note = mymidi.scale_to_note(scale_pct, c_major)
+    note = mymidi.scale_to_note(scale_pct, c_blues)
 
     #Translate that note to a MIDI pitch
     midi_pitch = mymidi.note_to_midi_pitch(note)
 
+    #make different transportType are in different octaves
+    midi_pitch = midi_pitch + relative_octave(type)
+
     return midi_pitch
+
+def relative_octave(transportType):
+    return {
+        'train' : 24,
+        'regional train' : 12,
+        'tram' : 0,
+        'bus' : -12,
+        'night bus' : -24 
+    }[transportType]
+
 
 def velocity(transportType):
     return {
