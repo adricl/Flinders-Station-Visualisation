@@ -57,7 +57,7 @@ start_time = int(data.head(1).sort_column)
 
 note_list = []
 for index, row in data.iterrows():
-    note = [int(row.sort_column) - start_time, int(mag_to_pitch_tuned(row.type, row.arrival_departure)), int(velocity(row.type)), int(duration(row.type))]
+    note = [int(row.sort_column) - start_time + random.uniform(0,.2), int(mag_to_pitch_tuned(row.type, row.arrival_departure)), int(velocity(row.type)), int(duration(row.type))]
     note_list.append(note)
 
 # Add a track with those notes

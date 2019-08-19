@@ -31,73 +31,7 @@ class MIDITime(object):
         self.base_octave = base_octave
         self.octave_range = octave_range
         self.note_chart = [["C"], ["C#", "Db"], ["D"], ["D#", "Eb"], ["E"], ["F"], ["F#", "Gb"], ["G"], ["G#", "Ab"], ["A"], ["A#", "Bb"], ["B"]]
-
-    def beat(self, numdays):
-        beats_per_second = self.tempo / 60.0
-        beats_per_datayear = self.seconds_per_year * beats_per_second
-        beats_per_dataday = beats_per_datayear / 365.25
-
-        return round(beats_per_dataday * numdays, 2)
-
-    def check_tz(self, input):
-        if input.tzinfo:
-            return input.tzinfo
-        else:
-            return None
-
-    # Match the compare date to the timezone of whatever your input date is, if the input datetime is timezone-aware
-    def normalize_datetime(self, input, compare_date):
-        # if input is date, make epoch a date
-        if type(input) is datetime.date:
-            return compare_date.date()
-        # # First, coerce to datetime in case it's a date
-        # if type(input) is datetime.date:
-        #     input = datetime.datetime.combine(input, datetime.datetime.min.time())
-
-        # If tz data present, make epoch tz-aware
-        tz = self.check_tz(input)
-        if tz:
-            return tz.localize(compare_date)
-        else:
-            return compare_date
-
-    def days_since_epoch(self, input):
-        normalized_epoch = self.normalize_datetime(input, self.epoch)
-        return (input - normalized_epoch).total_seconds() / 60 / 60 / 24  # How many days, with fractions
-
-    def map_week_to_day(self, year, week_num, desired_day_num=None):
-        ''' Helper for weekly data, so when you jump to a new year you don't have notes playing too close together. Basically returns the first Sunday, Monday, etc. in 0-indexed integer format that is in that week.
-
-        Usage: Once without a desired_day_num, then feed it a day_num in the loop
-
-        Example:
-        first_day = self.map_week_to_day(filtered_data[0]['Year'], filtered_data[0]['Week'])
-
-        for r in filtered_data:
-            # Convert the week to a date in that week
-            week_start_date = self.map_week_to_day(r['Year'], r['Week'], first_day.weekday())
-            # To get your date into an integer format, convert that date into the number of days since Jan. 1, 1970
-            days_since_epoch = self.mymidi.days_since_epoch(week_start_date)
-
-        '''
-        year_start = datetime.datetime(int(year), 1, 1).date()
-        year_start_day = year_start.weekday()
-        week_start_date = year_start + datetime.timedelta(weeks=1 * (int(week_num) - 1))
-        week_start_day = week_start_date.weekday()
-        if desired_day_num and week_start_day < desired_day_num:
-            return week_start_date + datetime.timedelta(days=(desired_day_num - week_start_day))
-        return week_start_date
-
-    def get_data_range(self, data_list, attribute_name, ignore_nulls=True):
-        data_list = list(data_list)  # If the data is still a CSV object, once you loop through it you'll get rewind issues. So coercing to list.
-        if ignore_nulls:
-            minimum = min([float(d[attribute_name]) for d in data_list if d[attribute_name]])
-            maximum = max([float(d[attribute_name]) for d in data_list if d[attribute_name]])
-        else:
-            minimum = min([float(d[attribute_name]) for d in data_list])
-            maximum = max([float(d[attribute_name]) for d in data_list])
-        return [minimum, maximum]
-
+  
     def scale_to_note_classic(self, scale_pct, mode):  # Only works in multi-octave mode if in C Major (i.e. all the notes are used. Should not be used in other keys, unless octave range is 1.)
         full_mode = []
         n = 0
@@ -167,32 +101,6 @@ class MIDITime(object):
     def linear_scale_pct(self, domain_min, domain_max, input, reverse=False):
         domain_range = float(domain_max) - float(domain_min)
         domain_pct = (input - domain_min) / domain_range
-
-        if reverse:
-            domain_pct = 1 - domain_pct
-        return domain_pct
-
-    def log_scale_pct(self, domain_min, domain_max, input, reverse=False, direction='exponential'):
-        if direction == 'exponential':  # E.G. earthquakes
-            min_log_domain = pow(10, domain_min)
-            max_log_domain = pow(10, domain_max)
-            domain_range = max_log_domain - min_log_domain
-
-            log_input = pow(10, input)
-        elif direction == 'log':  # natural log scale
-            if domain_min > 0:
-                min_log_domain = log(domain_min)
-            else:
-                min_log_domain = log(0.1)  # Technically this is not a true log scale. Someone smarter than me will have to figure this out.
-            if domain_max > 0:
-                max_log_domain = log(domain_max)
-            else:
-                max_log_domain = log(0.1)  # Technically this is not a true log scale. Someone smarter than me will have to figure this out.
-            domain_range = max_log_domain - min_log_domain
-
-            log_input = log(input)
-
-        domain_pct = (log_input - min_log_domain) / domain_range
 
         if reverse:
             domain_pct = 1 - domain_pct
