@@ -22,12 +22,19 @@ def convertTimeToStr(time):
   val = int(split[0]) * 60 + int(split[1])
   return val
 
-def loadData(dataType, inpath, dateSelected, stopIds):
+def loadData(dataType, inpath, dateSelected, stopIds, showDates=False):
   feed = ptg.load_raw_feed(inpath)
   trips = feed.trips
   stops = feed.stops
   stop_times = feed.stop_times
-  #stop_ids = stops[stops.stop_id.isin(stopIds)]['stop_id']
+  
+  if showDates:
+    for row in feed.calendar.start_date.unique():
+      print("GTFS file for: " + row)
+
+    for row in feed.calendar_dates.date.unique():
+      print("and for special day: " + row)
+
 
   service_id_by_selected_day = {}
   service_ids_by_date = ptg.read_service_ids_by_date(inpath)
@@ -72,25 +79,27 @@ def generateResultData(result):
       transformedData = transformedData.append({'time': row.arrival_time, 'type': row.type, 'arrival_departure': 'arrival', 'sort_column': convertTimeToStr(row.arrival_time) }, ignore_index=True)
       transformedData = transformedData.append({'time': row.departure_time, 'type': row.type, 'arrival_departure': 'departure', 'sort_column': convertTimeToStr(row.departure_time) }, ignore_index=True)
   return transformedData.sort_values(by='sort_column', axis=0, ascending=True)
-#getTransportData()
+
 
 #train
 inpath = 'data/gtfs/2/google_transit.zip'
-dateSelected = datetime.datetime(2019,7,20)
+dateSelected = datetime.datetime(2019,8,28)
+print("Date Selected: " + dateSelected.strftime("%d/%m/%Y"))
+
+
 #19854, Flinders Street Railway Station
 stopIds = ['19854']
-train = loadData('train', inpath, dateSelected, stopIds)
+train = loadData('train', inpath, dateSelected, stopIds, True)
+
 
 #Regional Train
 inpath = 'data/gtfs/1/google_transit.zip'
-dateSelected = datetime.datetime(2019,7,20)
 #22238, Flinders Street Railway Station
 stopIds = ['22238']
 regTrain = loadData('regional train', inpath, dateSelected, stopIds)
 
 #Tram
 inpath = 'data/gtfs/3/google_transit.zip'
-dateSelected = datetime.datetime(2019,7,20)
 #19685, 13-Federation Square/Swanston St 
 #19499, 13-Federation Square/Swanston St
 #18175, 5-Swanston St/Flinders St (Melbourne City)
@@ -104,7 +113,6 @@ tram = loadData('tram', inpath, dateSelected, stopIds)
 
 #Night Bus
 inpath = 'data/gtfs/8/google_transit.zip'
-dateSelected = datetime.datetime(2019,7,20)
 stopIds = ['41082']
 nightBus = loadData('night bus', inpath, dateSelected, stopIds)
 
