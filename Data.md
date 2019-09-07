@@ -15,6 +15,7 @@ CHange chords randomly
 
 Drum patterns generation https://github.com/tensorflow/magenta/tree/master/magenta/models/drums_rnn
 IMporv music ImprovRNN https://github.com/tensorflow/magenta/tree/master/magenta/models/improv_rnn
+https://gogul09.github.io/software/deep-drum Good exmaple
 
 
 ## Air Quality Hourly Data
