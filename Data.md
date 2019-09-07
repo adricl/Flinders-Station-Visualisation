@@ -4,6 +4,10 @@
 https://github.com/cirlabs/miditime
 https://programminghistorian.org/en/lessons/sonification
 
+More hints on what to do https://www.youtube.com/watch?v=vFItEfPHp2A
+he uses the c note pentatonic sclae for the random notes
+Use a few differnet tracks. 
+
 ## Air Quality Hourly Data
 https://discover.data.vic.gov.au/dataset/1a673fd7-e5fe-4aed-ae8d-3537d088f1bd/resource/645643b0-e6a6-49de-bce2-895e37b0b1c2/download/epa20-20aqapi20-20web20services20specification20v12032028229.pdf
 http://sciwebsvc.epa.vic.gov.au/aqapi/Help
