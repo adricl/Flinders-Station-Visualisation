@@ -18,7 +18,7 @@ IMporv music ImprovRNN https://github.com/tensorflow/magenta/tree/master/magenta
 https://gogul09.github.io/software/deep-drum Good exmaple
 
 https://github.com/tensorflow/magenta/tree/master/magenta/models/music_vae Allowing for two peices to be linked via generatred music
-
+https://colab.research.google.com/notebooks/magenta/hello_magenta/hello_magenta.ipynb
 
 ## Air Quality Hourly Data
 https://discover.data.vic.gov.au/dataset/1a673fd7-e5fe-4aed-ae8d-3537d088f1bd/resource/645643b0-e6a6-49de-bce2-895e37b0b1c2/download/epa20-20aqapi20-20web20services20specification20v12032028229.pdf
