@@ -4,6 +4,23 @@
 https://github.com/cirlabs/miditime
 https://programminghistorian.org/en/lessons/sonification
 
+More hints on what to do https://www.youtube.com/watch?v=vFItEfPHp2A
+he uses the c note pentatonic sclae for the random notes
+Use a few differnet tracks. 
+
+Random velocity makes it sounds more human
+Increase the note length for an intrument. 
+CHange chords randomly 
+### magenta Machine learning models for music
+
+Drum patterns generation https://github.com/tensorflow/magenta/tree/master/magenta/models/drums_rnn
+IMporv music ImprovRNN https://github.com/tensorflow/magenta/tree/master/magenta/models/improv_rnn
+https://gogul09.github.io/software/deep-drum Good exmaple
+
+https://github.com/tensorflow/magenta/tree/master/magenta/models/music_vae Allowing for two peices to be linked via generatred music
+https://colab.research.google.com/notebooks/magenta/hello_magenta/hello_magenta.ipynb
+https://magenta.tensorflow.org/demos/colab/
+
 ## Air Quality Hourly Data
 https://discover.data.vic.gov.au/dataset/1a673fd7-e5fe-4aed-ae8d-3537d088f1bd/resource/645643b0-e6a6-49de-bce2-895e37b0b1c2/download/epa20-20aqapi20-20web20services20specification20v12032028229.pdf
 http://sciwebsvc.epa.vic.gov.au/aqapi/Help
