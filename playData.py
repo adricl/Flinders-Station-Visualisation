@@ -69,14 +69,20 @@ mymidi = MIDITime(120, 'myfile.mid')
 # ]
 start_time = int(data.head(1).sort_column)
 
+#creates only one track, we might add more later
+mymidi.create_midi_track(1)
+
+track = 0
+channel = 0
 note_list = []
 for index, row in data.iterrows():
-    note = [int(row.sort_column) - start_time + random.uniform(0,.2), int(mag_to_pitch_tuned(row.type, row.arrival_departure)), int(velocity(row.type)), int(duration(row.type))]
-    note_list.append(note)
+    note = [int(row.sort_column) - start_time + random.uniform(0,.2), 
+        int(mag_to_pitch_tuned(row.type, row.arrival_departure)), 
+        int(velocity(row.type)), 
+        int(duration(row.type))]
+    mymidi.add_note(track, channel, note)
 
-# Add a track with those notes
-mymidi.add_track(note_list)
-
+    #mymidi.MIDIFile.addPitchWheelEvent(track, channel, int(row.sort_column) - start_time, random.randrange(-8192, 8192))
 
 # Output the .mid file
-mymidi.save_midi()
+mymidi.save_file()

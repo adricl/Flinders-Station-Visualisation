@@ -19,15 +19,9 @@ from midiutil import MIDIFile
 
 class MIDITime(object):
 
-    def __init__(self, tempo=120, outfile='miditime.mid', seconds_per_year=5, base_octave=5, octave_range=1, custom_epoch=None):
+    def __init__(self, tempo=120, outfile='miditime.mid', base_octave=5, octave_range=1):
         self.tempo = tempo
         self.outfile = outfile
-        self.tracks = []
-        if custom_epoch:  # Only necessary if you have data that starts before 1970 and DO NOT want to start your midi at the first sound.
-            self.epoch = custom_epoch
-        else:
-            self.epoch = datetime.datetime(1970, 1, 1)
-        self.seconds_per_year = seconds_per_year
         self.base_octave = base_octave
         self.octave_range = octave_range
         self.note_chart = [["C"], ["C#", "Db"], ["D"], ["D#", "Eb"], ["E"], ["F"], ["F#", "Gb"], ["G"], ["G#", "Ab"], ["A"], ["A#", "Bb"], ["B"]]
@@ -110,9 +104,6 @@ class MIDITime(object):
         scale_range = range_max - range_min
         return range_min + (input_pct * scale_range)
 
-    def add_track(self, note_list):
-        self.tracks.append(note_list)
-
     def add_note(self, track, channel, note):
         time = note[0]
         pitch = note[1]
@@ -124,30 +115,52 @@ class MIDITime(object):
         # Now add the note.
         self.MIDIFile.addNote(track, channel, pitch, time, duration, velocity)
 
-    def save_midi(self):
-        # Create the MIDIFile Object with 1 track
-        self.MIDIFile = MIDIFile(len(self.tracks))
+    def add_pitch_shift(self, track, channel, dets):
+        time = dets[0]
+        value = dets[1]
 
-        for i, note_list in enumerate(self.tracks):
+        self.MIDIFile.addPitchWheelEvent(track, channel, time, value)
 
-            # Tracks are numbered from zero. Times are measured in beats.
-            track = i
-            time = 0
+    def create_midi_track(self, tracks):
+        self.MIDIFile = MIDIFile(tracks)
 
-            # Add track name and tempo.
-            self.MIDIFile.addTrackName(track, time, "Track %s" % i)
-            self.MIDIFile.addTempo(track, time, self.tempo)
+        time = 0
+        for n in range(tracks):
+            track_name = "Track %s" % n
+            print(track_name)
+            self.MIDIFile.addTrackName(n, time, track_name)
+            self.MIDIFile.addTempo(n, time, self.tempo)
 
-            for n in note_list:
-                if len(n) == 2:
-                    note = n[0]
-                    channel = n[1]
-                else:
-                    note = n
-                    channel = 0
-                self.add_note(track, channel, note)
-
-        # And write it to disk.
+    def save_file(self):
         binfile = open(self.outfile, 'wb')
         self.MIDIFile.writeFile(binfile)
         binfile.close()
+      
+
+    # def save_midi(self):
+    #     # Create the MIDIFile Object with 1 track
+    #     self.MIDIFile = MIDIFile(len(self.tracks))
+
+    #     for i, note_list in enumerate(self.tracks):
+
+    #         # Tracks are numbered from zero. Times are measured in beats.
+    #         track = i
+    #         time = 0
+
+    #         # Add track name and tempo.
+    #         self.MIDIFile.addTrackName(track, time, "Track %s" % i)
+    #         self.MIDIFile.addTempo(track, time, self.tempo)
+
+    #         for n in note_list:
+    #             if len(n) == 2:
+    #                 note = n[0]
+    #                 channel = n[1]
+    #             else:
+    #                 note = n
+    #                 channel = 0
+    #             self.add_note(track, channel, note)
+
+    #     # And write it to disk.
+    #     binfile = open(self.outfile, 'wb')
+    #     self.MIDIFile.writeFile(binfile)
+    #     binfile.close()
