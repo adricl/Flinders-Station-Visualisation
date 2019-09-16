@@ -14,11 +14,12 @@ def mag_to_pitch_tuned(type, direction):
     # scale_pct = mymidi.log_scale_pct(3, 5.7, magnitude, True)
 
     # Pick a range of notes. This allows you to play in a key.
-    #c_major = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-    c_blues = ['C','Eb','F','G','Bb']
+    c_major = ['C', 'Db', 'Eb', 'F', 'G', 'Ab']
+    #c_blues = ['C','Eb','F','G','Bb']
     #c_major = ['C', 'C#', 'D', 'D#', 'E', 'E#', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'B#']
     #Find the note that matches your data point
-    note = mymidi.scale_to_note(scale_pct, c_blues)
+
+    note = mymidi.scale_to_note(scale_pct, c_major)
 
     #Translate that note to a MIDI pitch
     midi_pitch = mymidi.note_to_midi_pitch(note)
@@ -27,6 +28,57 @@ def mag_to_pitch_tuned(type, direction):
     midi_pitch = midi_pitch + relative_octave(type)
 
     return midi_pitch
+
+def blues_pitch_tune(type, direction, count): 
+    # based on this https://makingmusicmag.com/master-the-blues-on-piano/
+    c7_blues = ['C', 'E', 'G', 'Bb']
+    f7_blues = ['F', 'A', 'C', 'Eb']
+    g7_blues = ['G', 'B', 'D', 'F']
+    
+    #4 bars of C7
+    #2 bars of F7
+    #2 bars of C7
+    #1 bar  of G7
+    #1 bar  of F7
+    #2 bars of C7
+    
+    scale = []
+    
+    if (count < 4):
+        #4 bars of C7
+        scale = c7_blues
+    elif (count < 6):
+        #2 bars of F7
+        scale = f7_blues
+    elif (count < 8):
+        #2 bars of C7
+        scale = c7_blues
+    elif (count < 9):
+        #1 bar  of G7
+        scale = g7_blues
+    elif (count < 10):
+        #1 bar  of F7
+        scale = f7_blues
+    elif (count < 12):
+        #2 bars of C7
+        scale = c7_blues
+
+    scale_pct = mymidi.linear_scale_pct(1, 4, random.uniform(1,4))
+    note = mymidi.scale_to_note(scale_pct, scale)
+    midi_pitch = mymidi.note_to_midi_pitch(note)
+    #midi_pitch = midi_pitch + relative_octave(type)
+
+    if (count == 11):
+        count = 0
+    else:
+        count = count + 1
+
+    return midi_pitch, count
+
+def diatonic_chord(type, direction, count):
+    c_major = ['C', 'Db', 'Eb', 'F', 'G', 'Ab']
+    
+
 
 def relative_octave(transportType):
     return {
@@ -75,12 +127,30 @@ mymidi.create_midi_track(1)
 track = 0
 channel = 0
 note_list = []
+
+savedRow = None
+count = 0
 for index, row in data.iterrows():
-    note = [int(row.sort_column) - start_time + random.uniform(0,.2), 
-        int(mag_to_pitch_tuned(row.type, row.arrival_departure)), 
-        int(velocity(row.type)), 
-        int(duration(row.type))]
-    mymidi.add_note(track, channel, note)
+    if (savedRow is None):
+        savedRow = row
+    if (savedRow.sort_column != row.sort_column):
+        savedRow = row
+        pitch, count = blues_pitch_tune(savedRow.type, savedRow.arrival_departure, count)
+        note = [int(savedRow.sort_column) - start_time, 
+                int(pitch), 
+                int(velocity(savedRow.type) + random.randrange(0, 30)), 
+                int(duration(savedRow.type) + random.randrange(0, 5) )]
+        mymidi.add_note(track, channel, note)
+
+        if (random.uniform(0, 1) > .75):
+            note = [int(savedRow.sort_column) - start_time + random.uniform(0, .8), 
+                int(pitch), 
+                int(velocity(savedRow.type) + random.randrange(0, 30)), 
+                int(duration(savedRow.type) + random.randrange(0, 5) )]
+            mymidi.add_note(track, channel, note)
+
+
+        
 
     #mymidi.MIDIFile.addPitchWheelEvent(track, channel, int(row.sort_column) - start_time, random.randrange(-8192, 8192))
 
