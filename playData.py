@@ -75,9 +75,41 @@ def blues_pitch_tune(type, direction, count):
 
     return midi_pitch, count
 
-def diatonic_chord(type, direction, count):
+def c_major_pitch_tune(type, direction, count): 
+    #c_major = [60, 61, 63, 65, 67, 70]
     c_major = ['C', 'Db', 'Eb', 'F', 'G', 'Ab']
     
+    diminished = []
+    diminished.append(c_major[1])
+    diminished.append(c_major[2])
+    diminished.append(c_major[5])
+
+    four_five = []
+    four_five.append(c_major[3])
+    four_five.append(c_major[4])
+
+    first_note = []
+    first_note.append(c_major[0])
+    midi_pitch = 60
+    if (count == 0):
+        midi_pitch = mymidi.note_to_midi_pitch(c_major[0] + '5')
+
+    if (count == 1 or count == 2):
+        scale_pct = mymidi.linear_scale_pct(1, len(diminished), random.uniform(1,len(diminished)))
+        note = mymidi.scale_to_note(scale_pct, diminished)
+        midi_pitch = mymidi.note_to_midi_pitch(note)
+
+    if (count == 3):
+        scale_pct = mymidi.linear_scale_pct(1, len(four_five), random.uniform(1,len(four_five)))
+        note = mymidi.scale_to_note(scale_pct, four_five)
+        midi_pitch = mymidi.note_to_midi_pitch(note)
+
+    if (count > 3):
+        count = 0
+    else:
+        count = count + 1
+
+    return midi_pitch, count
 
 
 def relative_octave(transportType):
@@ -135,7 +167,8 @@ for index, row in data.iterrows():
         savedRow = row
     if (savedRow.sort_column != row.sort_column):
         savedRow = row
-        pitch, count = blues_pitch_tune(savedRow.type, savedRow.arrival_departure, count)
+        #pitch, count = blues_pitch_tune(savedRow.type, savedRow.arrival_departure, count)
+        pitch, count = c_major_pitch_tune(savedRow.type, savedRow.arrival_departure, count)
         note = [int(savedRow.sort_column) - start_time, 
                 int(pitch), 
                 int(velocity(savedRow.type) + random.randrange(0, 30)), 

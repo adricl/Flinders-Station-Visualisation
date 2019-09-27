@@ -52,7 +52,6 @@ class MIDITime(object):
                     out_group.append(note + str(current_octave))
                 full_c_haystack.append(out_group)
             n += 1
-
         full_mode = []
         n = 0
         while n < self.octave_range:
@@ -69,9 +68,9 @@ class MIDITime(object):
                         break
                 full_c_haystack = full_c_haystack[note_key:]
             n += 1
-
         # Now run through your specified mode and pick the exact notes in those octaves
         index = int(scale_pct * float(len(full_mode)))
+        
         if index >= len(full_mode):
             index = len(full_mode) - 1
 
@@ -81,6 +80,7 @@ class MIDITime(object):
         midinum = 0
         letter = notename[:-1]
         octave = notename[-1]
+        print(letter + ' ')
 
         i = 0
         for note in self.note_chart:
@@ -110,7 +110,7 @@ class MIDITime(object):
         velocity = note[2]
         duration = note[3]
 
-        print(pitch, time, duration, velocity)
+        #print(pitch, time, duration, velocity)
 
         # Now add the note.
         self.MIDIFile.addNote(track, channel, pitch, time, duration, velocity)
